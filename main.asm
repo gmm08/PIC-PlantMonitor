@@ -1,3 +1,4 @@
+LIST   P=PIC16F1825
 #include "p16f1825.inc"
 
 ; CONFIG1
@@ -19,14 +20,21 @@ MAIN_PROG CODE                      ; let linker place main program
 
 START
  
+ banksel OSCCON
  clrf OSCCON		    ;Fosc set to 31kHz
  movlw B'00000010'	    
  movwf TRISC		    ;Set bit 1 as input, rest are outputs
- movlw 0x21
- movwf SSP1CON1		    ;Set SPI mode with Fosc/16 sck
  movlw 0x24
  movwf WDTCON		    ;Set WDT to 256s intervals, WDT is turned OFF
+ banksel SSP1CON1
+ movlw 0x21
+ movwf SSP1CON1		    ;Set SPI mode with Fosc/16 sck
+ 
+ banksel PIR1
+ bcf PIR1,3		    ;Clear SPI Interrupt flag
+ banksel PIE1
  bsf PIE1,3		    ;Enable SPI interrupt
+ banksel INTCON
  bsf INTCON,7		    ;Enable Global Interrupt
 
 Loop:
