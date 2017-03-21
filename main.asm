@@ -35,9 +35,9 @@ START
  movwf SSP1CON1		    ;Set SPI mode with Fosc/16 sck
  
  banksel PIR1
- bcf PIR1,3		    ;Clear SPI Interrupt flag
+ clrf PIR1		    ;Clear SPI and ADC Interrupt flag
  banksel PIE1
- bsf PIE1,3		    ;Enable SPI interrupt
+ movlw B'01001000'	    ;Enable SPI nand ADC interrupt
  banksel INTCON
  movlw B'11000000'
  movwf INTCON		    ;Enable Global Interrupt and Peripheral Interrupt
@@ -51,7 +51,20 @@ START
  
 Loop:
     
+    ;TO DO
+    
+    ;read ADC and sleep until conversion is finished
+    banksel ADCON0
+    bsf ADCON0,0	    ;ADC in enabled
+    
+    ;send data
+    
+    ;Go to sleep
+    
     
  GOTO Loop                          ; loop forever
 
+Send:
+ 
+ 
     END
