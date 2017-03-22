@@ -37,10 +37,11 @@ START
  banksel PIR1
  clrf PIR1		    ;Clear SPI and ADC Interrupt flag
  banksel PIE1
- movlw B'01001000'	    ;Enable SPI nand ADC interrupt
+ movlw B'01001000'	    
+ movwf PIE1		    ;Enable SPI and ADC interrupt
  banksel INTCON
- movlw B'11000000'
- movwf INTCON		    ;Enable Global Interrupt and Peripheral Interrupt
+ movlw B'01000000'
+ movwf INTCON		    ;Enable Peripheral Interrupt
 
  banksel ADCON0
  movlw B'00000100'	    ;Channel set to AN1, ADC is disabled
@@ -55,7 +56,15 @@ Loop:
     
     ;read ADC and sleep until conversion is finished
     banksel ADCON0
-    bsf ADCON0,0	    ;ADC in enabled
+    bsf ADCON0,0	    ;ADC is enabled
+    bsf ADCON0,1	    ;Conversion started
+    sleep
+    movlw 0x00		    
+    movwf FSR0L		    ;Load low byte of FSR0
+    movlw 0x20
+    movwf FSR0H		    ;Load high byte of FSR0
+    movf ADRESH,W	    ;Conversion result moved to w
+    movwi FSR0++	    ;Move W to Indirect Adressing Register
     
     ;send data
     
